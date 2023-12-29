@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { styled } from '@mui/material/styles';
+
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,7 +14,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useNavigate } from 'react-router-dom';
-import { Link as RouterLink } from 'react-router-dom';
+
 
 function Copyright(props) {
   return (
@@ -28,17 +28,6 @@ function Copyright(props) {
     </Typography>
   );
 }
-
-const StyledLink = styled(RouterLink)({
-  fontSize: '0.9rem',
-  color: 'black',
-  margin: '5px',
-  textDecoration: 'none',
-  '&:hover': {
-    color: 'grey',
-    textDecoration: 'none',
-  },
-});
 
 export default function SignIn() {
   const [email, setEmail] = useState('');

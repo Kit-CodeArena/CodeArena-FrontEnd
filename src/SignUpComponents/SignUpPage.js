@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,7 +11,7 @@ import Box from '@mui/material/Box';
 import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useNavigate } from 'react-router-dom';
+import { StyledLink  } from '../theme.js';
 
 function Copyright(props) {
   return (
@@ -136,9 +135,9 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
-                  로그인 창으로 이동
-                </Link>
+              <StyledLink to="/signin">
+                  로그인
+                </StyledLink>
               </Grid>
             </Grid>
           </Box>
