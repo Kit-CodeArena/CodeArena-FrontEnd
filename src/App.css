@@ -51,3 +51,22 @@
     transform: rotate(360deg);
   }
 }
+
+
+@keyframes loadingAnimation {
+  from {
+    left: 0;
+    width: 0%;
+  }
+  to {
+    left: 100%;
+    width: 100%;
+  }
+}
+
+.loading-bar {
+  position: relative;
+  height: 10px;
+  background-color: black; /* 색상은 원하는 대로 설정 */
+  animation: loadingAnimation 2s linear forwards;
+}

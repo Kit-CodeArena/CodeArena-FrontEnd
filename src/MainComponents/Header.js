@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Divider, Toolbar, Button, Typography, IconButton, Collapse, Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogActions, Divider, Toolbar, Button, Typography, IconButton, Collapse, Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -7,7 +7,9 @@ function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const theme = useTheme();
+  const [loginAlertOpen, setLoginAlertOpen] = useState(false);
   const isLargeScreen = useMediaQuery('(min-width:1100px)');
 
   const subMenus = {
@@ -16,12 +18,27 @@ function Header() {
     // 다른 메뉴 항목에 대한 서브 메뉴 데이터 추가...
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
   const handleLoginClick = () => {
+    navigate('/signin');
+  };
+
+  const handleLogoutClick = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
     navigate('/signin');
   };
 
   const handleSignUpClick = () => {
     navigate('/signup');
+  };
+
+  const handleImageClick = () => {
+    navigate('/');
   };
 
   const handleMenuToggle = () => {
@@ -35,6 +52,25 @@ function Header() {
   const handleMouseLeave = () => {
     setOpenSubMenu(null);
   };
+
+  const handleLoginAlertOpen = () => {
+    setLoginAlertOpen(true);
+  };
+
+  // 로그인 필요 알림 Dialog 닫기
+  const handleLoginAlertClose = () => {
+    setLoginAlertOpen(false);
+    navigate('/signin');
+  };
+
+  const handleMenuItemClick = (path) => {
+    if (!isLoggedIn) {
+      handleLoginAlertOpen();
+    } else {
+      navigate(path);
+    }
+  };
+
 
   const renderSubMenu = (menu) => {
     return (
@@ -60,7 +96,7 @@ function Header() {
     >
       {subMenus[menu].map((item, index, array) => (
         <React.Fragment key={index}>
-          <MenuItem onClick={() => navigate(`/${menu}/${item}`)}>{item}</MenuItem>
+          <MenuItem onClick={() => handleMenuItemClick(`/${menu}/${item}`)}>{item}</MenuItem>
           {index < array.length - 1 && <Divider />} {/* 마지막 항목을 제외하고 Divider 추가 */}
         </React.Fragment>
       ))}
@@ -87,7 +123,7 @@ function Header() {
       >
         대회
       </MenuItem>
-      <MenuItem onClick={() => navigate('/leaderboard')}
+      <MenuItem onClick={() => handleMenuItemClick('/leaderboard')}
               sx={{
                 '&:hover': {
                   backgroundColor: 'black', // 마우스 오버 시 배경색 변경
@@ -96,7 +132,7 @@ function Header() {
               }}>
         리더보드
       </MenuItem>
-      <MenuItem onClick={() => navigate('/problems')}
+      <MenuItem onClick={() => handleMenuItemClick('/problems')}
               sx={{
                 '&:hover': {
                   backgroundColor: 'black', // 마우스 오버 시 배경색 변경
@@ -117,7 +153,7 @@ function Header() {
       >
         게시판
       </MenuItem>
-      <MenuItem onClick={() => navigate('/qa')}
+      <MenuItem onClick={() => handleMenuItemClick('/qa')}
               sx={{
                 '&:hover': {
                   backgroundColor: 'black', // 마우스 오버 시 배경색 변경
@@ -126,7 +162,7 @@ function Header() {
               }}>
         Q&A
       </MenuItem>
-      <MenuItem onClick={() => navigate('/mypage')}
+      <MenuItem onClick={() => handleMenuItemClick('/mypage')}
               sx={{
                 '&:hover': {
                   backgroundColor: 'black', // 마우스 오버 시 배경색 변경
@@ -140,13 +176,50 @@ function Header() {
 
   const newmenuItems = (
     <Box sx={{ p:5, flexGrow: 1, background: "white", color: "black"}}>
-      <MenuItem onClick={() => navigate('/competition')}>대회</MenuItem>
-      <MenuItem onClick={() => navigate('/leaderboard')}>리더보드</MenuItem>
-      <MenuItem onClick={() => navigate('/problems')}>문제</MenuItem>
-      <MenuItem onClick={() => navigate('/board')}>게시판</MenuItem>
-      <MenuItem onClick={() => navigate('/qa')}>Q&A</MenuItem>
-      <MenuItem onClick={() => navigate('/mypage')}>마이페이지</MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick('/competition')}>대회</MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick('/leaderboard')}>리더보드</MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick('/problems')}>문제</MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick('/board')}>게시판</MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick('/qa')}>Q&A</MenuItem>
+      <MenuItem onClick={() => handleMenuItemClick('/mypage')}>마이페이지</MenuItem>
     </Box>
+  );
+
+
+  const authButtons = isLoggedIn ? (
+    <Button variant="none" size="small" onClick={handleLogoutClick}
+    sx={{ 
+      fontSize: '0.75rem',
+      padding: '5px 10px',
+      minHeight: '30px',
+      minWidth: '80px',
+      bottom: "35%"
+    }}>
+      로그아웃
+    </Button>
+  ) : (
+    <>
+      <Button variant="none" size="small" onClick={handleLoginClick}
+      sx={{ 
+        fontSize: '0.75rem',
+        padding: '5px 10px',
+        minHeight: '30px',
+        minWidth: '80px',
+        bottom: "35%"
+      }}>
+        로그인
+      </Button>
+      <Button variant="none" size="small" onClick={handleSignUpClick}
+      sx={{ 
+        fontSize: '0.75rem',
+        padding: '5px 10px',
+        minHeight: '30px',
+        minWidth: '80px',
+        bottom: "35%"
+      }}>
+        회원가입
+      </Button>
+    </>
   );
 
   return (
@@ -165,9 +238,10 @@ function Header() {
           sx={{ flex: 1 }}
         >
          <img 
-            src="1234.png" // 이미지의 URL을 여기에 삽입하세요.
+            src="/1234.png" // 이미지의 URL을 여기에 삽입하세요.
             alt="Logo" 
-            style={{ height: '50px' }} // 이미지 크기 조절
+            style={{ height: '50px', cursor: 'pointer' }} // 이미지 크기 조절
+            onClick={handleImageClick} // 이미지 클릭 시 이벤트 핸들러 추가
           />
         </Typography>
         {isLargeScreen && menuItems}
@@ -176,35 +250,31 @@ function Header() {
               <MenuIcon />
             </IconButton>
           )}
-        <Button variant="none" size="small" onClick={handleLoginClick}
-          sx={{ 
-            fontSize: '0.75rem', // 폰트 크기 조절
-            padding: '5px 10px', // 내부 패딩 조절
-            minHeight: '30px', // 최소 높이 설정
-            minWidth: '80px',  // 최소 너비 설정
-            bottom : "35%"
-          }}>
-          로그인
-        </Button>
-        <Button variant="none" size="small" onClick={handleSignUpClick}
-          sx={{ 
-            fontSize: '0.75rem', // 폰트 크기 조절
-            padding: '5px 5px', // 내부 패딩 조절
-            minHeight: '30px', // 최소 높이 설정
-            minWidth: '80px',  // 최소 너비 설정
-            bottom : "35%"
-          }}>
-          회원가입
-        </Button>
+        {authButtons}
       </Toolbar>
       </Box>
       <Divider />
+      <Box mt={2}></Box>
       {!isLargeScreen && (
         <Collapse in={menuOpen}>
           {newmenuItems}
         </Collapse>
       )}
       {openSubMenu && renderSubMenu(openSubMenu)}
+      <Dialog
+      open={loginAlertOpen}
+      onClose={handleLoginAlertClose}
+      aria-labelledby="alert-dialog-title"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"로그인이 필요한 서비스입니다."}
+      </DialogTitle>
+      <DialogActions>
+        <Button onClick={handleLoginAlertClose} color="primary">
+          로그인 하기
+        </Button>
+      </DialogActions>
+    </Dialog>
     </React.Fragment>
   );
 }

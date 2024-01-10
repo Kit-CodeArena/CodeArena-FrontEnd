@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,6 +15,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useNavigate } from 'react-router-dom';
+import { StyledLink  } from '../theme.js';
 
 
 function Copyright(props) {
@@ -34,19 +36,13 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const navigate = useNavigate();
 
-  const handleSignUp = () => {
-    navigate('/signup');
-  };
+  const handleSubmit = async (event) => {
 
-  useEffect(() => {
-    // 컴포넌트가 마운트될 때 비밀번호 필드 초기화
-    setPassword('');
-  }, []);
-
-  const handleSubmit = (event) => {
     event.preventDefault();
 
     let hasError = false;
@@ -73,7 +69,43 @@ export default function SignIn() {
       password: data.get('password'),
     });
   }
+
+    // 로그인 요청 로직
+    try {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Token:', result.token);
+        setSnackbarMessage('로그인 성공');
+        // 로그인 성공 후 토큰 저장 및 페이지 이동 로직 (예: navigate('/dashboard'))
+        localStorage.setItem('token', result.token);
+        navigate('/');
+      } else {
+        const errorResult = await response.json();
+        setSnackbarMessage(`로그인 실패: ${errorResult.message}`);
+      }
+    } catch (error) {
+      setSnackbarMessage('네트워크 오류');
+    }
+
+    setSnackbarOpen(true);
   };
+
+  const handleSignUp = () => {
+    navigate('/signup');
+  };
+
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 비밀번호 필드 초기화
+    setPassword('');
+  }, []);
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -174,6 +206,21 @@ export default function SignIn() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 10, mb: 4 }} />
+        <Snackbar
+    open={snackbarOpen}
+    autoHideDuration={6000}
+    onClose={() => setSnackbarOpen(false)}
+  >
+    <MuiAlert
+      onClose={() => setSnackbarOpen(false)}
+      severity="success"
+      elevation={6}
+      variant="filled"
+    >
+      {snackbarMessage}
+    </MuiAlert>
+  </Snackbar>
+
       </Container>
   );
 }

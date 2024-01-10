@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate를 react-router-dom에서 임포트
+import { useState } from 'react'; // useState를 React에서 임포트
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,6 +13,8 @@ import Box from '@mui/material/Box';
 import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { StyledLink  } from '../theme.js';
 
 function Copyright(props) {
@@ -29,14 +33,44 @@ function Copyright(props) {
 // TODO remove, this demo shouldn't need to reset the theme.
 
 
+
 export default function SignUp() {
-  const handleSubmit = (event) => {
+const navigate = useNavigate(); // useNavigate 훅 사용
+const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+
+    const userData = {
+      username: data.get('name'),
+      nickname: data.get('nickName'),
       email: data.get('email'),
       password: data.get('password'),
-    });
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSnackbarOpen(true);
+        navigate('/signin');
+      } else {
+        setSnackbarMessage(`회원가입 실패: ${response.status}`);
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage('네트워크 오류');
+      setSnackbarOpen(true);
+    }
   };
 
   return (
@@ -143,6 +177,20 @@ export default function SignUp() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 10, mb: 4 }} />
+        <Snackbar
+    open={snackbarOpen}
+    autoHideDuration={6000}
+    onClose={() => setSnackbarOpen(false)}
+  >
+    <MuiAlert
+      onClose={() => setSnackbarOpen(false)}
+      severity="success"
+      elevation={6}
+      variant="filled"
+    >
+      {snackbarMessage}
+    </MuiAlert>
+  </Snackbar>
       </Container>
   );
 }
