@@ -20,6 +20,10 @@
   pointer-events: none;
 }
 
+.page-content {
+  /* 페이지 컨텐츠에 대한 스타일 */
+  background-color: #f5f5f5; /* 원하는 회색 색상 코드로 변경 */
+}
 
 
 @media (prefers-reduced-motion: no-preference) {
@@ -70,3 +74,4 @@
   background-color: black; /* 색상은 원하는 대로 설정 */
   animation: loadingAnimation 2s linear forwards;
 }
+

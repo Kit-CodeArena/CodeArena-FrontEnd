@@ -14,8 +14,29 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "'Noto Sans KR', sans-serif"
-  }
-});
+  },
+  components: {
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          // 다이얼로그의 기본 스타일 설정
+          padding: '20px',
+          borderRadius: '10px',
+          // 기타 스타일 설정...
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          // 다이얼로그 타이틀 스타일 설정
+          fontSize: '1.2rem',
+          fontWeight: 'bold',
+          // 기타 스타일 설정...
+        },
+      },
+    },
+}});
 
 export default theme;
 

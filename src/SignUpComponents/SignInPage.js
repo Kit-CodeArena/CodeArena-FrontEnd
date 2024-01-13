@@ -17,20 +17,6 @@ import Container from '@mui/material/Container';
 import { useNavigate } from 'react-router-dom';
 import { StyledLink  } from '../theme.js';
 
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <StyledLink color="inherit" href="https://mui.com/">
-        Your Website
-      </StyledLink>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -126,7 +112,7 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 15,
+            marginTop: 0,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -139,73 +125,70 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
             Code Arena
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="이메일"
-              name="email"
-              autoComplete="off"
-              autoFocus
-              value={email}
-              onChange={handleEmailChange}
-              error={!!emailError}
-              helperText={emailError}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="비밀번호"
-              type="password"
-              id="password"
-              autoComplete="off"
-              value={password}
-              onChange={handlePasswordChange}
-              error={!!passwordError}
-              helperText={passwordError}
-            />
-    <FormControlLabel
-      control={<Checkbox value="remember" color="primary" />}
-      label={
-        <Typography sx={{ fontSize: '12px', fontFamily: 'Arial' }}>
-          로그인 상태 유지
-        </Typography>
-      }
-    />
-            <Button
-  type="submit"
-  fullWidth
-  variant="contained"
-  sx={{
-    mt: 3,
-    mb: 5,
-    fontSize: '1.25rem', // 폰트 사이즈를 키웁니다.
-    padding: '10px 20px', // 버튼의 내부 패딩을 조절합니다.
-    height: '50px', // 버튼의 높이를 지정합니다 (필요한 경우).
-    minWidth: '150px', // 버튼의 최소 너비를 지정합니다 (필요한 경우).
-    fontFamily: 'Kalnia'
-  }}
-            >
-            로그인
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <StyledLink to="/signup">
-                  회원가입
-                </StyledLink>
-              </Grid>
-              <Grid item>
-                <StyledLink href="#" variant="body2">
-                  비밀번호 찾기
-                </StyledLink>
-              </Grid>
-            </Grid>
-          </Box>
+  <Grid container spacing={1} alignItems="center">
+    <Grid item xs={12}>
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        id="email"
+        label="이메일"
+        name="email"
+        autoComplete="off"
+        autoFocus
+        value={email}
+        onChange={handleEmailChange}
+        error={!!emailError}
+        helperText={emailError}
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        name="password"
+        label="비밀번호"
+        type="password"
+        id="password"
+        autoComplete="off"
+        value={password}
+        onChange={handlePasswordChange}
+        error={!!passwordError}
+        helperText={passwordError}
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <FormControlLabel
+        control={<Checkbox value="remember" color="primary" />}
+        label={<Typography sx={{ fontSize: '12px', fontFamily: 'Arial' }}>로그인 상태 유지</Typography>}
+      />
+    </Grid>
+    <Button
+    type="submit"
+    fullWidth
+    variant="contained"
+    sx={{
+      mt: 1,
+      mb: 1,
+      fontSize: '1.25rem',
+      padding: '10px 20px',
+      height: '50px',
+      minWidth: '150px',
+      fontFamily: 'Kalnia'
+    }}
+  >
+    로그인
+  </Button>
+    <Grid item xs={6}>
+      <StyledLink to="/signup">회원가입</StyledLink>
+    </Grid>
+    <Grid item xs={6}>
+      <StyledLink href="#" variant="body2">비밀번호 찾기</StyledLink>
+    </Grid>
+  </Grid>
+</Box>
         </Box>
-        <Copyright sx={{ mt: 10, mb: 4 }} />
         <Snackbar
     open={snackbarOpen}
     autoHideDuration={6000}

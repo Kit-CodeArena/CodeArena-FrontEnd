@@ -1,37 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogActions, Divider, Toolbar, Button, Typography, IconButton, Collapse, Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import { Dialog, DialogTitle, DialogActions, Divider, Toolbar, Button, Typography,
+   IconButton, Collapse, Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
+
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import Slide from '@mui/material/Slide';
+
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const theme = useTheme();
+  const location = useLocation();
   const [loginAlertOpen, setLoginAlertOpen] = useState(false);
   const isLargeScreen = useMediaQuery('(min-width:1100px)');
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const subMenus = {
-    competition: ["대회 일정", "참가 방법", "결과 발표"],
-    board: ["공지사항", "업데이트 사항","오류 사항"],
-    // 다른 메뉴 항목에 대한 서브 메뉴 데이터 추가...
+  const isCurrentPage = (path) => {
+    return location.pathname === path;
   };
+
+  const menuItemStyle = (path) => {
+    const isActivePage = isCurrentPage(path);
+    return {
+      backgroundColor: isActivePage ? 'black' : 'transparent',
+      color: isActivePage ? 'white' : 'inherit',
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+        // 활성화된 페이지의 MenuItem에 대한 추가적인 마우스 오버 스타일
+        ...(isActivePage && {
+          backgroundColor: 'black',
+          color: 'white',
+        }),
+      },
+    };
+  };
+
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-  }, []);
+  }, [location]);
 
   const handleLoginClick = () => {
     navigate('/signin');
   };
 
-  const handleLogoutClick = () => {
+  const handleLogoutConfirm = () => {
     localStorage.removeItem('token');
+    // 다른 상태 업데이트 및 페이지 이동 등
+    setLogoutDialogOpen(false);
     setIsLoggedIn(false);
     navigate('/signin');
   };
+
+    // 로그아웃 다이얼로그 닫기
+    const handleLogoutCancel = () => {
+      setLogoutDialogOpen(false);
+    };
 
   const handleSignUpClick = () => {
     navigate('/signup');
@@ -71,39 +111,6 @@ function Header() {
     }
   };
 
-
-  const renderSubMenu = (menu) => {
-    return (
-      <Box
-      sx={{
-        p: 3,
-        background: 'white',
-        color: 'black',
-        animation: 'fade-in 0.5s',
-        '@keyframes fade-in': {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(-20px)'
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)'
-          }
-        },
-      }}
-      onMouseEnter={() => handleMouseEnter(menu)} // 서브 메뉴에 마우스가 올라갔을 때
-      onMouseLeave={handleMouseLeave} // 서브 메뉴에서 마우스가 벗어났을 때
-    >
-      {subMenus[menu].map((item, index, array) => (
-        <React.Fragment key={index}>
-          <MenuItem onClick={() => handleMenuItemClick(`/${menu}/${item}`)}>{item}</MenuItem>
-          {index < array.length - 1 && <Divider />} {/* 마지막 항목을 제외하고 Divider 추가 */}
-        </React.Fragment>
-      ))}
-    </Box>
-  );
-};
-
   const menuItems = (
     <Box sx={{ display: 'flex',
     flexGrow: 1, 
@@ -111,64 +118,26 @@ function Header() {
     bottom: "-1px", 
     left: "30%",
     width: '100%' }}>
-      <MenuItem 
-        onMouseEnter={() => handleMouseEnter('competition')}
-        onMouseLeave={handleMouseLeave}
-        sx={{
-          '&:hover': {
-            backgroundColor: 'black', // 마우스 오버 시 배경색 변경
-            color: 'white', // 마우스 오버 시 글자 색상 변경
-          },
-        }}
+      <MenuItem onClick={() => handleMenuItemClick('/competition')}
+        sx={menuItemStyle('/competition')}
       >
         대회
       </MenuItem>
       <MenuItem onClick={() => handleMenuItemClick('/leaderboard')}
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'black', // 마우스 오버 시 배경색 변경
-                  color: 'white', // 마우스 오버 시 글자 색상 변경
-                },
-              }}>
+        sx={menuItemStyle('/leaderboard')}>
         리더보드
       </MenuItem>
       <MenuItem onClick={() => handleMenuItemClick('/problems')}
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'black', // 마우스 오버 시 배경색 변경
-                  color: 'white', // 마우스 오버 시 글자 색상 변경
-                },
-              }}>
+        sx={menuItemStyle('/problems')}>
         문제
       </MenuItem>
       <MenuItem 
-        onMouseEnter={() => handleMouseEnter('board')}
-        onMouseLeave={handleMouseLeave}
-        sx={{
-          '&:hover': {
-            backgroundColor: 'black', // 마우스 오버 시 배경색 변경
-            color: 'white', // 마우스 오버 시 글자 색상 변경
-          },
-        }}
-      >
+        onClick={() => handleMenuItemClick('/board')}
+        sx={menuItemStyle('/board')}>
         게시판
       </MenuItem>
-      <MenuItem onClick={() => handleMenuItemClick('/qa')}
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'black', // 마우스 오버 시 배경색 변경
-                  color: 'white', // 마우스 오버 시 글자 색상 변경
-                },
-              }}>
-        Q&A
-      </MenuItem>
       <MenuItem onClick={() => handleMenuItemClick('/mypage')}
-              sx={{
-                '&:hover': {
-                  backgroundColor: 'black', // 마우스 오버 시 배경색 변경
-                  color: 'white', // 마우스 오버 시 글자 색상 변경
-                },
-              }}>
+        sx={menuItemStyle('/mypage')}>
         마이페이지
       </MenuItem>
     </Box>
@@ -180,7 +149,6 @@ function Header() {
       <MenuItem onClick={() => handleMenuItemClick('/leaderboard')}>리더보드</MenuItem>
       <MenuItem onClick={() => handleMenuItemClick('/problems')}>문제</MenuItem>
       <MenuItem onClick={() => handleMenuItemClick('/board')}>게시판</MenuItem>
-      <MenuItem onClick={() => handleMenuItemClick('/qa')}>Q&A</MenuItem>
       <MenuItem onClick={() => handleMenuItemClick('/mypage')}>마이페이지</MenuItem>
     </Box>
   );
@@ -254,13 +222,6 @@ function Header() {
       </Toolbar>
       </Box>
       <Divider />
-      <Box mt={2}></Box>
-      {!isLargeScreen && (
-        <Collapse in={menuOpen}>
-          {newmenuItems}
-        </Collapse>
-      )}
-      {openSubMenu && renderSubMenu(openSubMenu)}
       <Dialog
       open={loginAlertOpen}
       onClose={handleLoginAlertClose}
@@ -271,10 +232,28 @@ function Header() {
       </DialogTitle>
       <DialogActions>
         <Button onClick={handleLoginAlertClose} color="primary">
-          로그인 하기
+          로그인창 이동
         </Button>
       </DialogActions>
     </Dialog>
+    <Dialog
+        open={logoutDialogOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleLogoutCancel}
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle>{"로그아웃 하시겠습니까?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            로그아웃을 하시면 다시 로그인해야 합니다.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={handleLogoutConfirm}>로그아웃</Button>
+          <Button onClick={handleLogoutCancel}>취소</Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }

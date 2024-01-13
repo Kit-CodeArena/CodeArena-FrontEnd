@@ -7,7 +7,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import PersonIcon from '@mui/icons-material/Person';
@@ -17,22 +16,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { StyledLink  } from '../theme.js';
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 // TODO remove, this demo shouldn't need to reset the theme.
-
-
 
 export default function SignUp() {
 const navigate = useNavigate(); // useNavigate 훅 사용
@@ -51,7 +35,7 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/users/register', {
+      const response = await fetch('/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +62,7 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 15,
+            marginTop: 0,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -176,7 +160,6 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 10, mb: 4 }} />
         <Snackbar
     open={snackbarOpen}
     autoHideDuration={6000}
