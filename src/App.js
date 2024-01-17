@@ -17,17 +17,34 @@ import { StyledLink } from './theme';
 import './App.css';
 import LeaderPage from './LeaderBoardComponents/LeaderBoardPage';
 import CompetitionPage from './CompetitionComponents/CompetitionPage';
+import PostDetail from './BoardComponents/DetailBoardPage';
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <StyledLink color="inherit" href="https://github.com/Kit-CodeArena/" target="_blank">
-        Our Website
-      </StyledLink>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+<Typography variant="body2" color="text.secondary" align="center" {...props}>
+  {'Copyright © '}
+  <a
+    style={{ color: 'black', textDecoration: '' }}
+    href="https://mui.com/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    MUI.COM
+  </a>
+  {' '}
+  {new Date().getFullYear()}
+  {'.'}
+  <br /> 
+  {'Made by '}
+  <a
+    style={{ color: 'black', textDecoration: '' }}
+    href="https://github.com/Kit-CodeArena/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+     Our Website
+  </a>
+  </Typography>
   );
 }
 
@@ -44,6 +61,7 @@ function AppContent() {
       <Route path="/problems" element={<ProblemsPage />} />
       <Route path="/problems/:problemId" element={<ProblemDetail />} />
       <Route path="/board" element={<BoardPage />} />
+      <Route path="/board/:postId" element={<PostDetail />} />
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/leaderboard" element={<LeaderPage />} />
       <Route path="/competition" element={<CompetitionPage />} />

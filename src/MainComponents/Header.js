@@ -24,6 +24,7 @@ function Header() {
   const [loginAlertOpen, setLoginAlertOpen] = useState(false);
   const isLargeScreen = useMediaQuery('(min-width:1100px)');
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [userNickname, setUserNickname] = useState('');
 
   const isCurrentPage = (path) => {
     return location.pathname === path;
@@ -52,12 +53,45 @@ function Header() {
 
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    const fetchUserDetails = async () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+  
+      if (token) {
+        try {
+          const response = await fetch('/api/users/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+  
+          if (response.ok) {
+            const data = await response.json();
+            setUserNickname(data.nickname);
+          } else {
+            // 오류 처리
+            if (response.status === 404 || response.status === 401) {
+              console.error('사용자 정보를 가져오는 데 실패했습니다.');
+            }
+          }
+        } catch (error) {
+          console.error('네트워크 오류:', error);
+        }
+      } else {
+        // 토큰이 없는 경우 추가적인 처리(예: 상태 초기화)
+        setUserNickname('');
+      }
+    };
+  
+    fetchUserDetails();
   }, [location]);
 
   const handleLoginClick = () => {
     navigate('/signin');
+  };
+
+  const handlenickNameClick = () => {
+    navigate('/mypage');
   };
 
   const handleLogoutConfirm = () => {
@@ -153,8 +187,18 @@ function Header() {
     </Box>
   );
 
-
   const authButtons = isLoggedIn ? (
+    <>
+    <Button variant="none" size="small" onClick={handlenickNameClick}
+    sx={{ 
+      fontSize: '0.75rem',
+      padding: '5px 10px',
+      minHeight: '30px',
+      minWidth: '80px',
+      bottom: "35%"
+    }}>
+        {userNickname} 님
+      </Button>
     <Button variant="none" size="small" onClick={handleLogoutClick}
     sx={{ 
       fontSize: '0.75rem',
@@ -165,6 +209,7 @@ function Header() {
     }}>
       로그아웃
     </Button>
+    </>
   ) : (
     <>
       <Button variant="none" size="small" onClick={handleLoginClick}
@@ -213,15 +258,22 @@ function Header() {
           />
         </Typography>
         {isLargeScreen && menuItems}
+
           {!isLargeScreen && (
-            <IconButton color="inherit" onClick={() => setMenuOpen(!menuOpen)}>
+            <IconButton color="inherit" onClick={handleMenuToggle}>
               <MenuIcon />
             </IconButton>
           )}
-        {authButtons}
-      </Toolbar>
+          {authButtons}
+        </Toolbar>
       </Box>
       <Divider />
+
+      {!isLargeScreen && (
+        <Collapse in={menuOpen}>
+          {newmenuItems}
+        </Collapse>
+      )}
       <Dialog
       open={loginAlertOpen}
       onClose={handleLoginAlertClose}

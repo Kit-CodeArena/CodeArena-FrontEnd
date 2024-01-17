@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate} from 'react-router-dom';
-import { Button, Container, Typography, Box, Paper, Grid, Divider } from '@mui/material';
-import Header from '../MainComponents/Header';
+import {  useMediaQuery, Button, Container, Typography, Box, Paper, Grid, Divider } from '@mui/material';
 
 export default function ProblemDetail() {
   const { problemId } = useParams();
   const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const isLargeScreen = useMediaQuery('(min-width:1100px)');
   const handleTitleClick = () => {
     navigate(`/problems/${problemId}`);
   };
@@ -56,7 +56,7 @@ export default function ProblemDetail() {
 
   return (
     <>
-        <Container component="main" maxWidth="md" style={{ maxHeight: '80vh', paddingTop: '15px' }}>
+        <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', height: '75vh', padding: '10px' }}>
         <Paper>
         <Typography 
           variant="h4" 

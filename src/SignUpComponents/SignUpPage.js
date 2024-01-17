@@ -48,7 +48,8 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
         setSnackbarOpen(true);
         navigate('/signin');
       } else {
-        setSnackbarMessage(`회원가입 실패: ${response.status}`);
+        const errorResponse = await response.json(); // Extract JSON from the response
+        setSnackbarMessage(`회원가입 실패: ${errorResponse.message}`); // Use the message from the response
         setSnackbarOpen(true);
       }
     } catch (error) {

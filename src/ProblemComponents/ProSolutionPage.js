@@ -1,5 +1,5 @@
 import React, { useState, useEffect }  from 'react';
-import {  Button, Grid, Container, Typography, List, ListItem, ListItemText, Box, Paper, Divider,  Pagination } from '@mui/material';
+import {  useMediaQuery, Button, Grid, Container, Typography, List, ListItem, ListItemText, Box, Paper, Divider,  Pagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
@@ -9,6 +9,7 @@ export default function Problems() {
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const problemsPerPage = 20; // 페이지당 문제 수
+    const isLargeScreen = useMediaQuery('(min-width:1100px)');
 
     useEffect(() => {
       const fetchProblems = async () => {
@@ -63,7 +64,7 @@ export default function Problems() {
   
       return (
         <>
-          <Container component="main" maxWidth="md" style={{ maxHeight: '80vh', paddingTop: '10px' }}>
+          <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', height: '75vh', padding: '10px' }}>
             {isLoading && <div className="loading-bar"></div>}
             <Paper>
             <Typography variant="h6" component="h1" gutterBottom align="left"
@@ -75,23 +76,23 @@ export default function Problems() {
             </Typography>
             <List>
   <ListItem style={{ paddingBottom: '0px' }}> {/* 하단 패딩 조정 */}
-  <Grid container spacing={2} alignItems="center">
-      <Grid item xs={4} style={{ padding: '10px' }}>
+  <Grid container spacing={1} alignItems="center">
+      <Grid item xs={4}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>문제</Typography>
       </Grid>
-      <Grid item xs={2} style={{ padding: '22px' }}>
+      <Grid item xs={2} style={{ textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>난이도</Typography>
       </Grid>
-      <Grid item xs={2} style={{ padding: '10px' }}>
+      <Grid item xs={2} style={{ textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>카테고리</Typography>
       </Grid>
-      <Grid item xs={1} style={{ padding: '10px' }}>
+      <Grid item xs={1} style={{ textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>제출</Typography>
       </Grid>
-      <Grid item xs={1} style={{ padding: '10px' }}>
+      <Grid item xs={1} style={{ textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>정답</Typography>
       </Grid>
-      <Grid item xs={2} style={{ padding: '10px' }}>
+      <Grid item xs={2} style={{ textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>정답률</Typography>
       </Grid>
     </Grid>
@@ -100,11 +101,11 @@ export default function Problems() {
                 {currentProblems.map((problem,index) => (
                   <React.Fragment key={problem.id}>
                     <ListItem button onClick={() => handleProblemClick(problem.id)}>
-                    <Grid container spacing={2}>
+                    <Grid container spacing={1} alignItems="center">
           <Grid item xs={4}>
             <Typography variant="body1">{problem.title}</Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
   {problem.difficulty == 1 && (
     <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#3de388', color: '#0a0a0a' }}>
       하
@@ -121,16 +122,16 @@ export default function Problems() {
     </Button>
   )}
 </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{problem.category}</Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={1} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{problem.totalSubmissions}</Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={1} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{problem.correctSubmissions}</Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{problem.accuracy}%</Typography>
           </Grid>
         </Grid>
