@@ -68,6 +68,7 @@ function Header() {
           if (response.ok) {
             const data = await response.json();
             setUserNickname(data.nickname);
+            localStorage.setItem('nickname', data.nickname);
           } else {
             // 오류 처리
             if (response.status === 404 || response.status === 401) {

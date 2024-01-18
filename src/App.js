@@ -18,6 +18,7 @@ import './App.css';
 import LeaderPage from './LeaderBoardComponents/LeaderBoardPage';
 import CompetitionPage from './CompetitionComponents/CompetitionPage';
 import PostDetail from './BoardComponents/DetailBoardPage';
+import NewBoardPage from './BoardComponents/NewBoardPage';
 
 function Copyright(props) {
   return (
@@ -65,6 +66,7 @@ function AppContent() {
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/leaderboard" element={<LeaderPage />} />
       <Route path="/competition" element={<CompetitionPage />} />
+      <Route path="/create-post" element={<NewBoardPage />} />
       </Routes>
       <footer>
         <Copyright sx={{ mt: 10, mb: 4 }} />

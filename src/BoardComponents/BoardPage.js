@@ -1,6 +1,7 @@
 import React, { useState, useEffect }  from 'react';
-import { Button, FormControl, Alert, MenuItem, TextField, Select, useMediaQuery, List, ListItem, Grid, Divider, Container, Typography, Box, Paper, Pagination } from '@mui/material';
+import { Fab, Button, FormControl, Alert, MenuItem, TextField, Select, useMediaQuery, List, ListItem, Grid, Divider, Container, Typography, Box, Paper, Pagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add'; // "+" 아이콘
 import '../App.css';
 
 export default function BoardPage() {
@@ -21,6 +22,12 @@ export default function BoardPage() {
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   };
+
+  const handleCreatePost = () => {
+    // 게시글 생성 페이지로 이동하는 로직
+    navigate('/create-post'); // 예시 URL, 실제 경로에 맞게 수정하세요.
+  };
+
 
   const handleSearch = async () => {
     if (!searchTerm) {
@@ -149,7 +156,7 @@ export default function BoardPage() {
         <List>
         <ListItem style={{ paddingBottom: '0px' }}> {/* 하단 패딩 조정 */}
   <Grid container spacing={1} alignItems="center">
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>제목</Typography>
       </Grid>
       <Grid item xs={2} style={{textAlign: 'center' }}>
@@ -164,6 +171,9 @@ export default function BoardPage() {
       <Grid item xs={1} style={{textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>좋아요</Typography>
       </Grid>
+      <Grid item xs={1} style={{textAlign: 'center' }}>
+        <Typography variant="subtitle1" style={{ color: '#219afc' }}>댓글</Typography>
+      </Grid>
       <Grid item xs={2} style={{textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>작성일</Typography>
       </Grid>
@@ -174,7 +184,7 @@ export default function BoardPage() {
                   <React.Fragment key={post.id}>
                     <ListItem button onClick={() => handlePostClick(post.id)}>
                     <Grid container spacing={1} alignItems="center">
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Typography variant="body1">{post.title}</Typography>
           </Grid>
           <Grid item xs={2} style={{ textAlign: 'center' }}>
@@ -188,6 +198,9 @@ export default function BoardPage() {
           </Grid>
           <Grid item xs={1} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{post.likes}</Typography>
+          </Grid>
+          <Grid item xs={1} style={{ textAlign: 'center' }}>
+            <Typography variant="body2">{post.commentCount}</Typography>
           </Grid>
           <Grid item xs={2} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{timeSince(post.createdAt)}</Typography>
@@ -207,7 +220,9 @@ export default function BoardPage() {
          color="primary" 
          />
       </Box>
-
+      <Fab color="primary" aria-label="add" style={{ position: 'fixed', bottom: 20, right: 20 }} onClick={handleCreatePost}>
+        <AddIcon />
+      </Fab>
       <Box display="flex" justifyContent="center" mt={2} alignItems="center">
         <FormControl style={{ minWidth: 60, marginRight: '10px' }}>
           <Select
