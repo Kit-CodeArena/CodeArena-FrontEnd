@@ -361,7 +361,11 @@ const newComment = await response.json();
                   fullWidth
                   variant="outlined"
                   margin="normal"
-                  style={{ fontSize: '14px' }} // 폰트 크기 설정
+                  sx={{
+                    '& .MuiInputBase-input': { // 이 클래스는 TextField의 입력 부분을 지칭합니다.
+                      fontSize: '14px', // 원하는 폰트 크기로 조정하세요. 예: '1rem', '16px' 등
+                    }
+                  }}
                 />
                 <Button onClick={() => submitEdit(comment.id)}>저장</Button>
                 <Button onClick={() => setEditingCommentId(null)}>취소</Button>

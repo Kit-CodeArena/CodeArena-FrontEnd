@@ -25,6 +25,7 @@ function Header() {
   const isLargeScreen = useMediaQuery('(min-width:1100px)');
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [userNickname, setUserNickname] = useState('');
+  
 
   const isCurrentPage = (path) => {
     return location.pathname === path;
