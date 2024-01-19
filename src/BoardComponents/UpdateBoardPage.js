@@ -6,14 +6,15 @@ import ImageListItem from '@mui/material/ImageListItem';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import '../App.css';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useParams } from 'react-router-dom';
 
-export default function NewBoardPage() {
+export default function UpdateBoardPage() {
   const isLargeScreen = useMediaQuery('(min-width:1100px)');
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
-
+  const postId = useParams().postId; // URL에서 postId 추출
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleContentChange = (e) => setContent(e.target.value);
   const handleCategoryChange = (e) => setCategory(e.target.value);
@@ -31,6 +32,35 @@ export default function NewBoardPage() {
       setImages(images.filter((_, i) => i !== index));
     };
 
+    useEffect(() => {
+        const fetchPostData = async () => {
+          try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/posts/${postId}`, {
+              method: "GET",
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+            });
+    
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+    
+            const postData = await response.json();
+            setTitle(postData.title);
+            setContent(postData.content);
+            setCategory(postData.tags ? postData.tags[0] : ''); // 첫 번째 태그를 카테고리로 설정
+            // images 상태도 여기에서 세팅해야 합니다 (이미지 데이터 구조에 따라 달라질 수 있음)
+          } catch (error) {
+            console.error('Fetch error:', error);
+            // 에러 처리 로직
+          }
+        };
+    
+        fetchPostData();
+      }, [postId]);
+
     const handleSubmit = async () => {
       const formData = new FormData();
       formData.append('title', title);
@@ -44,8 +74,8 @@ export default function NewBoardPage() {
     
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/posts', {
-          method: 'POST',
+        const response = await fetch(`/api/posts/${postId}`, {
+          method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -54,10 +84,10 @@ export default function NewBoardPage() {
         });
     
         if (response.ok) {
-          console.log("게시물이 성공적으로 생성되었습니다.");
+          console.log("게시물이 성공적으로 수정되었습니다.");
           navigate('/board');
         } else {
-          console.log("게시물 생성 중 오류 발생");
+          console.log("게시물 수정 중 오류 발생");
         }
       } catch (error) {
         console.error("네트워크 오류:", error);
@@ -67,7 +97,7 @@ export default function NewBoardPage() {
     return (
       <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', minheight: '75vh', padding: '10px' }}>
         <Paper style={{ padding: '20px' }}>
-        <Typography gutterBottom align="left" variant="h6">글 쓰기</Typography>
+        <Typography gutterBottom align="left" variant="h6">글 수정</Typography>
         <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
     <TextField

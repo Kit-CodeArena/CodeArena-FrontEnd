@@ -329,9 +329,9 @@ const newComment = await response.json();
     <IconButton 
       onClick={handleLikeClick}
       gutterBottom align="left"
-      style={{ color: 'black', alignItems: 'center', width: '20px', height: '40px' }}
+      style={{ color: 'black', alignItems: 'center', width: '20px', height: '30px' }}
     >
-      {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+      {liked ? <FavoriteIcon  fontSize="small"  /> : <FavoriteBorderIcon  fontSize="small" />}
     </IconButton>
     </div>
     </div>

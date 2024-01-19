@@ -1,7 +1,9 @@
 import React, { useState, useEffect }  from 'react';
-import { Fab, Button, FormControl, Alert, MenuItem, TextField, Select, useMediaQuery, List, ListItem, Grid, Divider, Container, Typography, Box, Paper, Pagination } from '@mui/material';
+import { Dialog, DialogTitle, DialogActions, Menu, IconButton, Fab, Button, FormControl, Alert, MenuItem, TextField, Select, useMediaQuery, List, ListItem, Grid, Divider, Container, Typography, Box, Paper, Pagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add'; // "+" 아이콘
+import EditIcon from '@mui/icons-material/Edit'; // 설정 아이콘 임포트
+import MoreVertIcon from '@mui/icons-material/MoreVert'; // 메뉴 아이콘
 import '../App.css';
 
 export default function BoardPage() {
@@ -14,6 +16,20 @@ export default function BoardPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState(false); // 검색 에러 상태
   const [filter, setFilter] = useState('all'); // 검색 필터
+  const userNickname = localStorage.getItem('nickname');
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+
+  const handleDeleteClick = (postId) => {
+    setSelectedPostId(postId);
+    setOpenDialog(true);
+  };
+  
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -28,6 +44,22 @@ export default function BoardPage() {
     navigate('/create-post'); // 예시 URL, 실제 경로에 맞게 수정하세요.
   };
 
+ const handleClick = (event) => {
+  event.stopPropagation(); // 이벤트 전파 중단
+  setAnchorEl(event.currentTarget);
+};
+
+const handleEditClick = (postId) => {
+  handleClose();
+  navigate(`/update-post/${postId}`);
+};
+
+const handleClose = (event) => {
+  if (event) {
+    event.stopPropagation();
+  }
+  setAnchorEl(null);
+};
 
   const handleSearch = async () => {
     if (!searchTerm) {
@@ -114,7 +146,8 @@ export default function BoardPage() {
         throw new Error('Network response was not ok');
       }
 
-      const data = await response.json();
+      let data = await response.json();
+      data = data.slice().reverse(); // 데이터 복사 후 역순으로 정렬
       setPosts(data);
     }catch (error) {
         console.error('Fetch error:', error);
@@ -125,6 +158,29 @@ export default function BoardPage() {
 
     fetchPosts();
   }, []);
+
+  const handleDeleteConfirm = async () => {
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/posts/${selectedPostId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Something went wrong with the delete request');
+      }
+  
+      console.log("Post deleted successfully:", selectedPostId);
+      setPosts(posts.filter(post => post.id !== selectedPostId));
+      setOpenDialog(false);
+    } catch (error) {
+      console.error('Delete error:', error);
+    }
+  };
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -202,13 +258,52 @@ export default function BoardPage() {
           <Grid item xs={1} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{post.commentCount}</Typography>
           </Grid>
+          {post.authorNickname === userNickname ? (
+          // 사용자 닉네임이 게시물 작성자와 일치하는 경우 (본인 게시물)
           <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="body2">{timeSince(post.createdAt)}</Typography>
+            <Typography variant="body2" component="span" style={{ marginLeft: '20px' }}>
+              {timeSince(post.createdAt)}
+            </Typography>
+      <IconButton size="small" onClick={handleClick}>
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+      <Menu
+        id="post-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+<MenuItem onClick={(e) => {
+  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
+  handleEditClick(post.id);
+}}>
+  수정
+</MenuItem>
+
+<MenuItem onClick={(e) => {
+  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
+  handleClose();
+  handleDeleteClick(post.id);
+}}>
+  삭제
+</MenuItem>
+      </Menu>
+    </Grid>
+        ) : (
+          // 사용자 닉네임이 게시물 작성자와 일치하지 않는 경우 (다른 사용자의 게시물)
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
+            <Typography variant="body2" component="span">
+              {timeSince(post.createdAt)}
+            </Typography>
           </Grid>
-        </Grid>
-                    </ListItem>
-                    {index !== currentPosts.length - 1 && <Divider />}
-                  </React.Fragment>
+        )}
+      </Grid>
+    </ListItem>
+    {index !== currentPosts.length - 1 && <Divider />}
+  </React.Fragment>
                 ))}
               </List>
             </Paper>
@@ -266,6 +361,22 @@ export default function BoardPage() {
           내용을 입력해주세요.
         </Alert>
       )}
+      <Dialog
+  open={openDialog}
+  onClose={handleDialogClose}
+  aria-labelledby="alert-dialog-title"
+  aria-describedby="alert-dialog-description"
+>
+  <DialogTitle id="alert-dialog-title">
+    {"정말 삭제하시겠습니까?"}
+  </DialogTitle>
+  <DialogActions>
+  <Button onClick={handleDeleteConfirm} autoFocus>
+      삭제
+    </Button>
+    <Button onClick={handleDialogClose}>취소</Button>
+  </DialogActions>
+</Dialog>
     </Container>
   );
 }
