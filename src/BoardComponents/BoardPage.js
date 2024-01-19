@@ -216,7 +216,7 @@ const handleClose = (event) => {
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>제목</Typography>
       </Grid>
       <Grid item xs={2} style={{textAlign: 'center' }}>
-        <Typography variant="subtitle1" style={{ color: '#219afc' }}>태그</Typography>
+        <Typography variant="subtitle1" style={{ color: '#219afc' }}>카테고리</Typography>
       </Grid>
       <Grid item xs={2} style={{textAlign: 'center' }}>
         <Typography variant="subtitle1" style={{ color: '#219afc' }}>작성자</Typography>

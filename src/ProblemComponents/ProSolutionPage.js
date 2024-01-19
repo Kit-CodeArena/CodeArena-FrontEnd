@@ -1,6 +1,7 @@
 import React, { useState, useEffect }  from 'react';
-import {  useMediaQuery, Button, Grid, Container, Typography, List, ListItem, ListItemText, Box, Paper, Divider,  Pagination } from '@mui/material';
+import { Fab, useMediaQuery, Button, Grid, Container, Typography, List, ListItem, ListItemText, Box, Paper, Divider,  Pagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add'; // "+" 아이콘
 import '../App.css';
 
 export default function Problems() {
@@ -11,6 +12,11 @@ export default function Problems() {
     const problemsPerPage = 20; // 페이지당 문제 수
     const isLargeScreen = useMediaQuery('(min-width:1100px)');
 
+    const handleCreateProblem = () => {
+      // 게시글 생성 페이지로 이동하는 로직
+      navigate('/create-problem'); // 예시 URL, 실제 경로에 맞게 수정하세요.
+    };
+  
     useEffect(() => {
       const fetchProblems = async () => {
         try {
@@ -149,6 +155,9 @@ export default function Problems() {
                 color="primary" 
               />
             </Box>
+            <Fab color="primary" aria-label="add" style={{ position: 'fixed', bottom: 20, right: 20 }} onClick={handleCreateProblem}>
+        <AddIcon />
+      </Fab>
           </Container>
         </>
       );

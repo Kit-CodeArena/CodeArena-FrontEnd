@@ -20,6 +20,7 @@ import CompetitionPage from './CompetitionComponents/CompetitionPage';
 import PostDetail from './BoardComponents/DetailBoardPage';
 import NewBoardPage from './BoardComponents/NewBoardPage';
 import UpdateBoardPage from './BoardComponents/UpdateBoardPage';
+import CreateProblemPage from './ProblemComponents/CreateProblemPage';
 
 function Copyright(props) {
   return (
@@ -69,6 +70,7 @@ function AppContent() {
       <Route path="/competition" element={<CompetitionPage />} />
       <Route path="/create-post" element={<NewBoardPage />} />
       <Route path="/update-post/:postId" element={<UpdateBoardPage />} />
+      <Route path="/create-problem" element={<CreateProblemPage />} />
       </Routes>
       <footer>
         <Copyright sx={{ mt: 10, mb: 4 }} />
