@@ -21,6 +21,7 @@ import PostDetail from './BoardComponents/DetailBoardPage';
 import NewBoardPage from './BoardComponents/NewBoardPage';
 import UpdateBoardPage from './BoardComponents/UpdateBoardPage';
 import CreateProblemPage from './ProblemComponents/CreateProblemPage';
+import UpdateProblemPage from './ProblemComponents/UpdateProblemPage';
 
 function Copyright(props) {
   return (
@@ -71,6 +72,7 @@ function AppContent() {
       <Route path="/create-post" element={<NewBoardPage />} />
       <Route path="/update-post/:postId" element={<UpdateBoardPage />} />
       <Route path="/create-problem" element={<CreateProblemPage />} />
+      <Route path="/update-problem/:problemId" element={<UpdateProblemPage/>} />
       </Routes>
       <footer>
         <Copyright sx={{ mt: 10, mb: 4 }} />

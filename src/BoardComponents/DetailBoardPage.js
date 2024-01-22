@@ -19,6 +19,7 @@ export default function PostDetail() {
   const [editingContent, setEditingContent] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCommentId, setDeletingCommentId] = useState(null);
+  const [imageURL, setImageURL] = useState('');
 
   const handleDeleteClick = (commentId) => {
     setDeletingCommentId(commentId);
@@ -159,6 +160,12 @@ const handleDeleteComment = async (commentId) => {
         const postData = await postResponse.json();
         setPost(postData);
         setLiked(postData.likedByCurrentUser); // 좋아요 상태를 업데이트
+        
+
+        if (postData.image) {
+          setImageURL(`data:image/jpeg;base64,${postData.image}`);
+        }
+        
         setError(''); // 오류 메시지 초기화
       } catch (error) {
         setError(error); // 오류 메시지 초기화
@@ -325,6 +332,9 @@ const newComment = await response.json();
     >
       {post.content}
     </Typography>
+    {imageURL && (
+  <img src={imageURL} alt="게시글 이미지" style={{ maxWidth: '50%', height: 'auto' }} />
+)}
     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
     <IconButton 
       onClick={handleLikeClick}

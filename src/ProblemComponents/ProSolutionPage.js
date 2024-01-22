@@ -22,6 +22,7 @@ export default function Problems() {
     const [filter, setFilter] = useState('title');
     const [searchTerm, setSearchTerm] = useState('');
     const [searchError, setSearchError] = useState(false);
+    const [isSearchResultEmpty, setIsSearchResultEmpty] = useState(false);
 
     const handleFilterChange = (event) => {
       setFilter(event.target.value);
@@ -68,7 +69,12 @@ export default function Problems() {
         }
   
         const data = await response.json();
-        setProblems(data); // 검색된 데이터로 게시글 상태 업데이트
+        if (data.length === 0) {
+          setIsSearchResultEmpty(true); // 검색 결과가 없음
+        } else {
+          setIsSearchResultEmpty(false); // 검색 결과가 있음
+          setProblems(data); // 검색된 데이터로 게시글 상태 업데이트
+        }
       } catch (error) {
         console.error('Search error:', error);
       } finally {
