@@ -15,7 +15,7 @@ export default function BoardPage() {
   const postsPerPage = 20; // 페이지당 게시글 수
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState(false); // 검색 에러 상태
-  const [filter, setFilter] = useState('all'); // 검색 필터
+  const [filter, setFilter] = useState('title'); // 검색 필터
   const userNickname = localStorage.getItem('nickname');
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
