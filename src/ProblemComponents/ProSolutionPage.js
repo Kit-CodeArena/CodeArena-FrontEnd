@@ -24,6 +24,14 @@ export default function Problems() {
     const [searchError, setSearchError] = useState(false);
     const [isSearchResultEmpty, setIsSearchResultEmpty] = useState(false);
 
+    const categoryStyles = {
+      '브론즈': { backgroundColor: '#cd7f32', color: '#fff' },
+      '실버': { backgroundColor: '#c0c0c0', color: '#0a0a0a' },
+      '골드': { backgroundColor: '#ffd700', color: '#0a0a0a' },
+      '플래티넘': { backgroundColor: '#e5e4e2', color: '#0a0a0a' },
+      '다이아몬드': { backgroundColor: '#b9f2ff', color: '#0a0a0a' },
+    };
+
     const handleFilterChange = (event) => {
       setFilter(event.target.value);
     };
@@ -87,7 +95,12 @@ export default function Problems() {
       event.stopPropagation(); // 이벤트 전파 중단
       setAnchorEl(event.currentTarget);
     };
-  
+
+    const handleEditClick = (problemId) => {
+      handleClose();
+      navigate(`/update-problem/${problemId}`);
+    };
+
     const handleClose = (event) => {
       if (event) {
         event.stopPropagation();
@@ -137,6 +150,7 @@ export default function Problems() {
       }
     };
 
+    
     const handleCloseDeleteDialog = () => {
       setDeleteDialogOpen(false);
     };
@@ -183,7 +197,7 @@ export default function Problems() {
   
       return (
         <>
-          <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', height: '75vh', padding: '10px' }}>
+          <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', minheight: '75vh', padding: '10px' }}>
             {isLoading && <div className="loading-bar"></div>}
             <Paper>
             <Typography variant="h6" component="h1" gutterBottom align="left"
@@ -261,23 +275,41 @@ export default function Problems() {
           <Grid item xs={2} style={{ textAlign: 'center' }}>
   {problem.difficulty == 1 && (
     <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#3de388', color: '#0a0a0a' }}>
-      하
+      매우 쉬움
     </Button>
   )}
   {problem.difficulty == 2 && (
-    <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#219afc', color: '#0a0a0a' }}>
-      중
+    <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#3de388', color: '#0a0a0a' }}>
+     쉬움
     </Button>
   )}
   {problem.difficulty == 3 && (
+    <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#219afc', color: '#0a0a0a' }}>
+      보통
+    </Button>
+  )}
+    {problem.difficulty == 4 && (
     <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#ff0303', color: '#fafafa' }}>
-      상
+      어려움
+    </Button>
+  )}
+    {problem.difficulty == 5 && (
+    <Button variant="contained" style={{ fontSize: '10px', backgroundColor: '#ff0303', color: '#fafafa' }}>
+      매우 어려움
     </Button>
   )}
 </Grid>
-          <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="body2">{problem.category}</Typography>
-          </Grid>
+<Grid item xs={2} style={{ textAlign: 'center' }}>
+  <Button 
+    variant="contained" 
+    style={{ 
+      fontSize: '10px', 
+      ...categoryStyles[problem.category.split(' ')[0]] 
+    }}
+  >
+    {problem.category}
+  </Button>
+</Grid>
           <Grid item xs={1} style={{ textAlign: 'center' }}>
             <Typography variant="body2">{problem.totalSubmissions}</Typography>
           </Grid>
@@ -294,11 +326,18 @@ export default function Problems() {
               <Menu
                 id={`problem-menu-${problem.id}`}
                 anchorEl={anchorEl}
-                keepMounted
                 open={open}
                 onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
               >
-                <MenuItem onClick={() => {/* 수정 로직 */}}>수정</MenuItem>
+                <MenuItem onClick={(e) => {
+  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
+  handleEditClick(problem.id);
+}}>
+  수정
+</MenuItem>
                 <MenuItem onClick={(e) => {
   e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
   handleClose();

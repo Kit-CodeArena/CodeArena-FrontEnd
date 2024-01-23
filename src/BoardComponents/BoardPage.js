@@ -199,7 +199,7 @@ const handleClose = (event) => {
 
 
   return (
-    <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', height: '75vh', padding: '10px' }}>
+    <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', minheight: '75vh', padding: '10px' }}>
       {isLoading && <div className="loading-bar"></div>}
       <Paper>
         <Typography variant="h6" component="h1" gutterBottom align="left" 

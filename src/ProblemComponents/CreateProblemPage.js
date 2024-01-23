@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Checkbox, FormControlLabel, IconButton, Container, Paper, Grid, TextField, Button, Select, MenuItem, Typography } from '@mui/material';
+import { InputLabel, FormControl, Checkbox, FormControlLabel, IconButton, Container, Paper, Grid, TextField, Button, Select, MenuItem, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useNavigate } from 'react-router-dom';
@@ -21,12 +21,25 @@ export default function CreateProblemPage() {
   const [memoryLimit, setMemoryLimit] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [testCases, setTestCases] = useState([{ input: '', output: '' }]);
-  // ... 기타 상태 변수들 선언
+  const [categoryLevel, setCategoryLevel] = useState(''); // 새로운 상태 추가
   
+  const [titleError, setTitleError] = useState(false);
+  const [tagError, setTagError] = useState(false);
+  const [categoryError, setCategoryError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [inputFormatError, setInputFormatError] = useState(false);
+  const [outputFormatError, setOutputFormatError] = useState(false);
+  const [sampleInputError, setSampleInputError] = useState(false);
+  const [sampleOutputError, setSampleOutputError] = useState(false);
+  const [timeLimitError, setTimeLimitError] = useState(false);
+  const [memoryLimitError, setMemoryLimitError] = useState(false);
+  const [difficultyError, setDifficultyError] = useState(false);
+  const [testCaseErrors, setTestCaseErrors] = useState(testCases.map(() => ({ inputError: false, outputError: false })));
+  const [categoryLevelError, setCategoryLevelError] = useState(false);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
-
 
   const handleTypeChange = (event) => {
     setIsContest(event.target.checked);
@@ -49,8 +62,87 @@ export default function CreateProblemPage() {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const validateTestCases = () => {
+    return testCases.map((testCase, index) => ({
+      inputError: testCase.input.trim() === '',
+      outputError: testCase.output.trim() === ''
+    }));
+  };
+
+  const handleSubmit = async () => {
+
+    let isValid = true;
+
+    if (title.trim() === '') {
+      setTitleError(true);
+      isValid = false;
+    }
+    if (tag.trim() === '') {
+      setTagError(true);
+      isValid = false;
+    }
+    if (!categoryLevel) {
+      setCategoryLevelError(true);
+      isValid = false;
+    }
+    if (description.trim() === '') {
+      setDescriptionError(true);
+      isValid = false;
+    }
+
+    if (inputFormat.trim() === '') {
+      setInputFormatError(true);
+      isValid = false;
+    }
+
+    if (outputFormat.trim() === '') {
+      setOutputFormatError(true);
+      isValid = false;
+    }
+
+    if (sampleInput.trim() === '') {
+      setSampleInputError(true);
+      isValid = false;
+    }
+
+    if (sampleOutput.trim() === '') {
+      setSampleOutputError(true);
+      isValid = false;
+    }
+
+    if (timeLimit.trim() === '') {
+      setTimeLimitError(true);
+      isValid = false;
+    }
+
+    if (memoryLimit.trim() === '') {
+      setMemoryLimitError(true);
+      isValid = false;
+    }
+
+    if (!difficulty) {
+      setDifficultyError(true);
+      isValid = false;
+    }
+
+    if (!category) {
+      setCategoryError(true);
+      isValid = false;
+    }
+
+    const newTestCaseErrors = validateTestCases();
+    setTestCaseErrors(newTestCaseErrors);
+
+    const hasTestCaseErrors = newTestCaseErrors.some(error => error.inputError || error.outputError);
+    if (hasTestCaseErrors) {
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return; // 입력이 유효하지 않으면 제출을 중단합니다.
+    }
+
+    const combinedCategory = categoryLevel ? `${category} ${categoryLevel}` : category;
 
     const problemData = {
       title,
@@ -62,7 +154,7 @@ export default function CreateProblemPage() {
       sampleOutput,
       timeLimit,
       memoryLimit,
-      category,
+      category: combinedCategory,
       tags: tag.split(',').map(t => t.trim()), // 태그를 쉼표로 분리하여 배열로 변환
       testCases,
       type: isContest ? "CONTEST" : "PRACTICE"
@@ -82,18 +174,13 @@ export default function CreateProblemPage() {
       });
 
       if (response.ok) {
-        setSnackbarMessage("문제 생성 성공");
-        setSnackbarSeverity("success");
         navigate('/problems');
       } else {
-        throw new Error('문제 생성 중 오류 발생');
+        console.log("게시물 생성 중 오류 발생");
       }
     } catch (error) {
-      setSnackbarMessage(error.message);
-      setSnackbarSeverity("error");
-    } finally {
-      setOpenSnackbar(true);
-    }
+      console.error("네트워크 오류:", error);
+    } 
   };
 
   const handleCloseSnackbar = () => {
@@ -108,6 +195,8 @@ export default function CreateProblemPage() {
         <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm = {6}>
               <TextField
+              error={titleError}
+              helperText={titleError ? "제목을 입력해주세요." : ""}
                 fullWidth
                 label="제목"
                 value={title}
@@ -116,6 +205,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item sm={6}>
               <TextField
+              error={tagError}
+              helperText={tagError ? "태그를 입력해주세요." : ""}
                 fullWidth
                 label="태그"
                 value={tag}
@@ -128,6 +219,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item sm={3}>
               <Select
+              error={categoryError}
+              helperText={categoryError ? "선택해주세요" : ""}
                 fullWidth
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -141,10 +234,28 @@ export default function CreateProblemPage() {
               </Select>
             </Grid>
             <Grid item sm={2}>
+              <FormControl fullWidth>
+                <InputLabel>단계</InputLabel>
+                <Select
+                error={categoryLevelError}
+                helperText={categoryLevelError ? "선택해주세요." : ""}
+                  value={categoryLevel}
+                  onChange={(e) => setCategoryLevel(e.target.value)}
+                  label="단계"
+                >
+                  {['I', 'II', 'III', 'IV', 'V'].map((level) => (
+                    <MenuItem key={level} value={level}>{level}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item sm={2}>
               <Typography>난이도</Typography>
             </Grid>
             <Grid item sm={2}>
               <Select
+              error={difficultyError}
+              helperText={difficultyError ? "선택해주세요." : ""}
                 fullWidth
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
@@ -157,15 +268,15 @@ export default function CreateProblemPage() {
                 ))}
               </Select>
             </Grid>
-            <Grid item xs={12} sm={3}>
-          </Grid>
             <Grid item xs={12} sm={2}>
               <Typography>시간</Typography>
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
+              error={timeLimitError}
+              helperText={timeLimitError ? "시간을 입력해주세요." : ""}
                 fullWidth
-                label="시간 제한 (초)"
+                label="시간 제한 (s)"
                 value={timeLimit}
                 onChange={(e) => setTimeLimit(e.target.value)}
                 placeholder="시간 제한 (예: 2.0)"
@@ -177,6 +288,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
+              error={memoryLimitError}
+              helperText={memoryLimitError ? "메모리 제한 값을 입력해주세요." : ""}
                 fullWidth
                 label="메모리 제한 (MB)"
                 value={memoryLimit}
@@ -187,6 +300,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item xs={12}>
               <TextField
+              error={descriptionError}
+              helperText={descriptionError ? "설명을 입력해주세요." : ""}
                 fullWidth
                 label="설명"
                 multiline
@@ -198,6 +313,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item xs={12}>
               <TextField
+              error={inputFormatError}
+              helperText={inputFormatError ? "입력 형식을 입력해주세요." : ""}
                 fullWidth
                 label="입력 형식"
                 value={inputFormat}
@@ -207,6 +324,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item xs={12}>
               <TextField
+              error={outputFormatError}
+              helperText={outputFormatError ? "출력 형식을 입력해주세요." : ""}
                 fullWidth
                 label="출력 형식"
                 value={outputFormat}
@@ -216,6 +335,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item xs={12} sm = {6}>
               <TextField
+              error={sampleInputError}
+              helperText={sampleInputError ? "예제 입력을 입력해주세요." : ""}
                 fullWidth
                 label="예제 입력"
                 value={sampleInput}
@@ -225,6 +346,8 @@ export default function CreateProblemPage() {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+              error={sampleOutputError}
+              helperText={sampleOutputError ? "예제 출력을 입력해주세요." : ""}
                 fullWidth
                 label="예제 출력"
                 value={sampleOutput}
@@ -236,6 +359,8 @@ export default function CreateProblemPage() {
               <React.Fragment key={index}>
                 <Grid item xs={5}>
                   <TextField
+                  error={testCaseErrors[index].inputError}
+                  helperText={testCaseErrors[index].inputError ? "입력을 작성해주세요." : ""}
                     fullWidth
                     label={`테스트 케이스 ${index + 1} 입력`}
                     value={testCase.input}
@@ -244,6 +369,8 @@ export default function CreateProblemPage() {
                 </Grid>
                 <Grid item xs={5}>
                   <TextField
+                              error={testCaseErrors[index].outputError}
+                              helperText={testCaseErrors[index].outputError ? "출력을 작성해주세요." : ""}
                     fullWidth
                     label={`테스트 케이스 ${index + 1} 출력`}
                     value={testCase.output}
@@ -273,7 +400,7 @@ export default function CreateProblemPage() {
                 }
                 label="대회 문제"
               />
-              <Button variant="contained" type="submit">
+              <Button variant="contained" onClick={handleSubmit}>
                 생성
               </Button>
             </Grid>
