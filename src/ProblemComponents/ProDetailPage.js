@@ -1,6 +1,103 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate} from 'react-router-dom';
-import {  useMediaQuery, Button, Container, Typography, Box, Paper, Grid, Divider } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, TextField, useMediaQuery, Button, Container, Typography, Box, Paper, Grid, Divider } from '@mui/material';
+
+function ProblemSolvingSection() {
+  const { problemId } = useParams();
+  const [selectedLanguage, setSelectedLanguage] = useState('python');
+  const [solutionCode, setSolutionCode] = useState('');
+  const [charCount, setCharCount] = useState(0);
+
+  const handleLanguageChange = (event) => {
+      setSelectedLanguage(event.target.value);
+  };
+
+  const handleCodeChange = (event) => {
+      const code = event.target.value;
+      setSolutionCode(code);
+      setCharCount(code.length); // 글자 수 계산 및 상태 업데이트
+  };
+
+  const handleSubmit = async () => {
+      // 여기에 제출 로직 구현
+      const token = localStorage.getItem('token');
+
+      try {
+          const response = await fetch('/api/submissions', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                  problemId,
+                  code: solutionCode,
+                  language: selectedLanguage
+              })
+          });
+
+          const responseData = await response.json();
+
+          if (response.ok) {
+            if (responseData.status === "ACCEPTED") {
+                alert('정답입니다!');
+            } else if (responseData.status === "REJECTED") {
+                alert('오답입니다.');
+            }
+            // 여기에 추가적인 성공 처리 로직을 추가할 수 있습니다.
+        }  else {
+          // 오류 메시지 표시
+          alert('제출 실패: ' + responseData.message);
+          // 여기에 추가적인 실패 처리 로직을 추가할 수 있습니다.
+        }
+      } catch (error) {
+          console.error('제출 중 오류:', error);
+          alert('제출 중 오류가 발생했습니다.');
+      }
+  };
+
+  return (
+      <div>
+          <FormControl fullWidth margin="normal">
+              <InputLabel id="language-select-label">언어 선택</InputLabel>
+              <Select
+                  labelId="language-select-label"
+                  id="language-select"
+                  value={selectedLanguage}
+                  label="언어 선택"
+                  onChange={handleLanguageChange}
+              >
+                  <MenuItem value="python">Python</MenuItem>
+                  <MenuItem value="java">Java</MenuItem>
+                  <MenuItem value="cpp">C++</MenuItem>
+              </Select>
+          </FormControl>
+
+          <TextField
+              id="code-editor"
+              label="코드 작성"
+              multiline
+              rows={10}
+              value={solutionCode}
+              onChange={handleCodeChange}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+          />
+          <Typography variant="caption" display="block" gutterBottom>
+              문자 Count: {charCount}
+          </Typography>
+          <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleSubmit}
+              style={{ marginTop: '10px' }}
+          >
+              제출
+          </Button>
+      </div>
+  );
+}
 
 export default function ProblemDetail() {
   const { problemId } = useParams();
@@ -56,7 +153,7 @@ export default function ProblemDetail() {
 
   return (
     <>
-        <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', height: '75vh', padding: '10px' }}>
+        <Container component="main" style={{ maxWidth: isLargeScreen ? 1100 : '100%', minheight: '75vh', padding: '10px' }}>
         <Paper>
         <Typography 
           variant="h4" 
@@ -161,7 +258,12 @@ export default function ProblemDetail() {
   </Grid>
 </Box>
         </Paper>
+        <Paper style={{ padding: '20px', marginTop: '20px' }}>
+                    <Typography variant="h6" gutterBottom align="left" style={{ fontWeight: 100, color: '#219afc', paddingBottom: '10px' }}>문제 풀이</Typography>
+                    <ProblemSolvingSection />
+                </Paper>
       </Container>
-    </>
+
+        </>
   );
 }

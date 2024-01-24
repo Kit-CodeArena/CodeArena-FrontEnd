@@ -25,10 +25,15 @@ function Header() {
   const isLargeScreen = useMediaQuery('(min-width:1100px)');
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [userNickname, setUserNickname] = useState('');
-  
+  const [showReLoginDialog, setShowReLoginDialog] = useState(false);
 
   const isCurrentPage = (path) => {
     return location.pathname === path;
+  };
+
+  const handleDialogClose = () => {
+    setShowReLoginDialog(false);
+    navigate('/login'); // 사용자를 로그인 페이지로 리디렉션
   };
 
   const menuItemStyle = (path) => {
@@ -72,9 +77,8 @@ function Header() {
             localStorage.setItem('nickname', data.nickname);
             localStorage.setItem('role', data.role)
           } else {
-            // 오류 처리
-            if (response.status === 404 || response.status === 401) {
-              console.error('사용자 정보를 가져오는 데 실패했습니다.');
+            if (response.status === 401) {
+              setShowReLoginDialog(true);
             }
           }
         } catch (error) {
@@ -307,6 +311,21 @@ function Header() {
         <DialogActions>
         <Button onClick={handleLogoutConfirm}>로그아웃</Button>
           <Button onClick={handleLogoutCancel}>취소</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={showReLoginDialog}
+        onClose={handleDialogClose}
+        aria-labelledby="relogin-dialog-title"
+      >
+        <DialogTitle id="relogin-dialog-title">세션 만료</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            로그인 세션이 만료되었습니다. 다시 로그인해 주세요.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>확인</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

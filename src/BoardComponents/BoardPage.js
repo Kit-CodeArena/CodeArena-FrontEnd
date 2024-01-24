@@ -21,9 +21,14 @@ export default function BoardPage() {
   const open = Boolean(anchorEl);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [menuState, setMenuState] = useState({ anchorEl: null, postId: null });
 
-  const handleDeleteClick = (postId) => {
-    setSelectedPostId(postId);
+  const handleDeleteClick = (event) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    handleClose();
+    setSelectedPostId(menuState.postId);
     setOpenDialog(true);
   };
   
@@ -44,21 +49,24 @@ export default function BoardPage() {
     navigate('/create-post'); // 예시 URL, 실제 경로에 맞게 수정하세요.
   };
 
- const handleClick = (event) => {
-  event.stopPropagation(); // 이벤트 전파 중단
-  setAnchorEl(event.currentTarget);
+const handleClick = (event, postId) => {
+  event.stopPropagation();
+  setMenuState({ anchorEl: event.currentTarget, postId: postId });
 };
 
-const handleEditClick = (postId) => {
-  handleClose();
-  navigate(`/update-post/${postId}`);
+const handleEditClick = (event) => {
+  if (event) {
+    event.stopPropagation();
+  }
+  navigate(`/update-post/${menuState.postId}`);
+  setMenuState({ anchorEl: null, postId: null });
 };
 
 const handleClose = (event) => {
   if (event) {
     event.stopPropagation();
   }
-  setAnchorEl(null);
+  setMenuState({ anchorEl: null, postId: null });
 };
 
   const handleSearch = async () => {
@@ -209,6 +217,8 @@ const handleClose = (event) => {
           paddingBottom: '10px' }}>
           게시판
         </Typography>
+        </Paper>
+        <Paper>
         <List>
         <ListItem style={{ paddingBottom: '0px' }}> {/* 하단 패딩 조정 */}
   <Grid container spacing={1} alignItems="center">
@@ -236,8 +246,8 @@ const handleClose = (event) => {
     </Grid>
   </ListItem>
   <Divider />
-                {currentPosts.map((post,index) => (
-                  <React.Fragment key={post.id}>
+  {posts.map((post, index) => (
+  <React.Fragment key={post.id}>
                     <ListItem button onClick={() => handlePostClick(post.id)}>
                     <Grid container spacing={1} alignItems="center">
           <Grid item xs={3}>
@@ -264,33 +274,28 @@ const handleClose = (event) => {
             <Typography variant="body2" component="span" style={{ marginLeft: '20px' }}>
               {timeSince(post.createdAt)}
             </Typography>
-      <IconButton size="small" onClick={handleClick}>
-        <MoreVertIcon fontSize="small" />
-      </IconButton>
-      <Menu
-        id="post-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
+            <IconButton size="small" onClick={(e) => {
+      handleClick(e, post.id);
+    }}
+  >
+      <MoreVertIcon fontSize="small" />
+    </IconButton>
+    <Menu
+      anchorEl={menuState.anchorEl}
+      open={menuState.postId === post.id && Boolean(menuState.anchorEl)}
+      onClose={handleClose}
+    >
 <MenuItem onClick={(e) => {
-  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
-  handleEditClick(post.id);
-}}>
-  수정
-</MenuItem>
+  e.stopPropagation(); // 이벤트 전파를 중단시킵니다
+  handleEditClick();
+}}>수정</MenuItem>
 
 <MenuItem onClick={(e) => {
-  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
+  e.stopPropagation(); // 이벤트 전파를 중단시킵니다
   handleClose();
-  handleDeleteClick(post.id);
-}}>
-  삭제
-</MenuItem>
-      </Menu>
+  handleDeleteClick();
+}}>삭제</MenuItem>
+    </Menu>
     </Grid>
         ) : (
           // 사용자 닉네임이 게시물 작성자와 일치하지 않는 경우 (다른 사용자의 게시물)

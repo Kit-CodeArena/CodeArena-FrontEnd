@@ -23,6 +23,7 @@ export default function Problems() {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchError, setSearchError] = useState(false);
     const [isSearchResultEmpty, setIsSearchResultEmpty] = useState(false);
+    const [menuState, setMenuState] = useState({});
 
     const categoryStyles = {
       '브론즈': { backgroundColor: '#cd7f32', color: '#fff' },
@@ -91,23 +92,34 @@ export default function Problems() {
     };
   
 
-    const handleClick = (event) => {
-      event.stopPropagation(); // 이벤트 전파 중단
-      setAnchorEl(event.currentTarget);
+    const handleClick = (event, problemId) => {
+      event.stopPropagation();
+      setMenuState(prevState => ({
+        ...prevState,
+        [problemId]: {
+          anchorEl: event.currentTarget,
+          problemId: problemId
+        }
+      }));
     };
 
-    const handleEditClick = (problemId) => {
-      handleClose();
-      navigate(`/update-problem/${problemId}`);
-    };
-
-    const handleClose = (event) => {
-      if (event) {
+    const handleEditClick = (event, problemId) => {
+      if (event && event.stopPropagation) {
         event.stopPropagation();
       }
-      setAnchorEl(null);
+      navigate(`/update-problem/${problemId}`);
+      setMenuState({ anchorEl: null, problemId: null });
     };
 
+    const handleClose = (event, problemId) => {
+      if (event && event.stopPropagation) {
+        event.stopPropagation();
+      }
+      setMenuState(prevState => ({
+        ...prevState,
+        [problemId]: null
+      }));
+    };
 
     const handleMenuClick = (menu) => {
       setSelectedMenu(menu); // 선택된 메뉴 업데이트
@@ -126,10 +138,16 @@ export default function Problems() {
       setOpenDialog(false);
     };
   
-    const handleDeleteClick = (problemId) => {
+    const handleDeleteClick = (event, problemId) => {
+      if (event && event.stopPropagation) {
+        event.stopPropagation();
+      }
+      console.log("Deleting problem ID:", problemId); // 문제 ID 확인
+      handleClose(null, problemId); // 이벤트 객체 없이 호출
       setDeletingProblemId(problemId);
       setDeleteDialogOpen(true);
     };
+    
 
     const handleDeleteConfirm = async () => {
       const token = localStorage.getItem('token');
@@ -207,6 +225,8 @@ export default function Problems() {
               paddingBottom: '10px' }}>
               문제 목록
             </Typography>
+            </Paper>
+            <Paper style={{ paddingTop: '10px'}}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', my: 2, pl: 2 }}>
             <ButtonGroup variant="text" aria-label="text button group">
   <Button
@@ -320,30 +340,24 @@ export default function Problems() {
     <Typography variant="body2" style={{ flex: 1, marginLeft: '40px' }}>{problem.accuracy}%</Typography>
           {role === 'ADMIN' && (
             <>
-              <IconButton size="small" onClick={handleClick}>
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-              <Menu
-                id={`problem-menu-${problem.id}`}
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button',
-                }}
-              >
-                <MenuItem onClick={(e) => {
-  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
-  handleEditClick(problem.id);
-}}>
-  수정
-</MenuItem>
-                <MenuItem onClick={(e) => {
-  e.stopPropagation(); // 부모 요소의 이벤트 전파 중단
-  handleClose();
-  handleDeleteClick(problem.id);
+  <IconButton size="small" onClick={(e) => handleClick(e, problem.id)}>
+    <MoreVertIcon fontSize="small" />
+  </IconButton>
+  <Menu
+    anchorEl={menuState[problem.id]?.anchorEl}
+    open={Boolean(menuState[problem.id])}
+    onClose={(e) => handleClose(e, problem.id)}
+  >
+    <MenuItem onClick={(e) => {
+      e.stopPropagation();
+      handleEditClick(e, problem.id);
+    }}>수정</MenuItem>
+<MenuItem onClick={(e) => {
+  e.stopPropagation();
+  handleClose(null, problem.id);
+  handleDeleteClick(e, problem.id);
 }}>삭제</MenuItem>
-              </Menu>
+  </Menu>
             </>
           )}
         </Grid>

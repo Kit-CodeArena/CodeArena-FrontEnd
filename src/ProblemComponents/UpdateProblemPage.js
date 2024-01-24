@@ -16,8 +16,8 @@ export default function UpdateProblemPage() {
   const [outputFormat, setOutputFormat] = useState('');
   const [sampleInput, setSampleInput] = useState('');
   const [sampleOutput, setSampleOutput] = useState('');
-  const [timeLimit, setTimeLimit] = useState('');
-  const [memoryLimit, setMemoryLimit] = useState('');
+  const [timeLimit, setTimeLimit] = useState(0); // 숫자로 초기화
+  const [memoryLimit, setMemoryLimit] = useState(0); // 숫자로 초기화
   const [difficulty, setDifficulty] = useState('');
   const [testCases, setTestCases] = useState([{ input: '', output: '' }]);
   const [categoryLevel, setCategoryLevel] = useState(''); // 새로운 상태 추가
@@ -99,8 +99,8 @@ export default function UpdateProblemPage() {
         setOutputFormat(problemData.outputFormat || '');
         setSampleInput(problemData.sampleInput || '');
         setSampleOutput(problemData.sampleOutput || '');
-        setTimeLimit(problemData.timeLimit || '');
-        setMemoryLimit(problemData.memoryLimit || '');
+        setTimeLimit(problemData.timeLimit || 0);
+        setMemoryLimit(problemData.memoryLimit || 0);
         setDifficulty(problemData.difficulty || '');
         setTestCases(problemData.testCases || []);
   
@@ -166,12 +166,12 @@ export default function UpdateProblemPage() {
       isValid = false;
     }
 
-    if (timeLimit.trim() === '') {
+    if (timeLimit <= 0) {
       setTimeLimitError(true);
       isValid = false;
     }
-
-    if (memoryLimit.trim() === '') {
+  
+    if (memoryLimit <= 0) {
       setMemoryLimitError(true);
       isValid = false;
     }
@@ -241,6 +241,16 @@ export default function UpdateProblemPage() {
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
+  };
+
+  const handleTimeLimitChange = (event) => {
+    const value = parseFloat(event.target.value);
+    setTimeLimit(value || 0); // 입력 값이 없거나 숫자가 아닌 경우 0으로 설정
+  };
+  
+  const handleMemoryLimitChange = (event) => {
+    const value = parseFloat(event.target.value);
+    setMemoryLimit(value || 0); // 입력 값이 없거나 숫자가 아닌 경우 0으로 설정
   };
 
   return (
@@ -334,7 +344,7 @@ export default function UpdateProblemPage() {
                 fullWidth
                 label="시간 제한 (s)"
                 value={timeLimit}
-                onChange={(e) => setTimeLimit(e.target.value)}
+                onChange={handleTimeLimitChange}
                 placeholder="시간 제한 (예: 2.0)"
                 type="number"
               />
@@ -349,7 +359,7 @@ export default function UpdateProblemPage() {
                 fullWidth
                 label="메모리 제한 (MB)"
                 value={memoryLimit}
-                onChange={(e) => setMemoryLimit(e.target.value)}
+                onChange={handleMemoryLimitChange}
                 placeholder="메모리 제한 (예: 128)"
                 type="number"
               />
@@ -457,7 +467,7 @@ export default function UpdateProblemPage() {
                 label="대회 문제"
               />
               <Button variant="contained" onClick={handleSubmit}>
-                생성
+                수정
               </Button>
             </Grid>
           </Grid>

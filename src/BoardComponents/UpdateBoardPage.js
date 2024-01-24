@@ -182,7 +182,7 @@ export default function UpdateBoardPage() {
           onClick={handleSubmit}
           sx={{ mt: 2 }}
         >
-          게시물 생성
+          게시물 수정
         </Button>
       </Paper>
     </Container>

@@ -17,11 +17,15 @@ import { StyledLink } from './theme';
 import './App.css';
 import LeaderPage from './LeaderBoardComponents/LeaderBoardPage';
 import CompetitionPage from './CompetitionComponents/CompetitionPage';
+import CreateChatroomPage from './CompetitionComponents/CreateChatroom';
 import PostDetail from './BoardComponents/DetailBoardPage';
 import NewBoardPage from './BoardComponents/NewBoardPage';
 import UpdateBoardPage from './BoardComponents/UpdateBoardPage';
 import CreateProblemPage from './ProblemComponents/CreateProblemPage';
 import UpdateProblemPage from './ProblemComponents/UpdateProblemPage';
+import RoomDetailPage from './CompetitionComponents/RoomDetailPage';
+import ChatRoom from './CompetitionComponents/Chatroom';
+
 
 function Copyright(props) {
   return (
@@ -73,6 +77,9 @@ function AppContent() {
       <Route path="/update-post/:postId" element={<UpdateBoardPage />} />
       <Route path="/create-problem" element={<CreateProblemPage />} />
       <Route path="/update-problem/:problemId" element={<UpdateProblemPage/>} />
+      <Route path="/create-chatroom" element={<CreateChatroomPage/>} />
+      <Route path="/competition/:roomId" element={<RoomDetailPage/>} />
+      <Route path="/chat/:roomId" element={<ChatRoom />} />
       </Routes>
       <footer>
         <Copyright sx={{ mt: 10, mb: 4 }} />
