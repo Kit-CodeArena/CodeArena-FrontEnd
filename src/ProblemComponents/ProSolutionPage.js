@@ -337,7 +337,7 @@ export default function Problems() {
             <Typography variant="body2">{problem.correctSubmissions}</Typography>
           </Grid>
           <Grid item xs={2} style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-    <Typography variant="body2" style={{ flex: 1, marginLeft: '40px' }}>{problem.accuracy}%</Typography>
+    <Typography variant="body2" style={{ flex: 1, marginLeft: '40px' }}>{problem.accuracy.toFixed(1)}%</Typography>
           {role === 'ADMIN' && (
             <>
   <IconButton size="small" onClick={(e) => handleClick(e, problem.id)}>

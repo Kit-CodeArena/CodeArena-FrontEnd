@@ -45,7 +45,7 @@ export default function CompetitionPage() {
       try {
         setIsLoading(true);
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/test/rooms`, {
+        const response = await fetch(`/api/rooms`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`
